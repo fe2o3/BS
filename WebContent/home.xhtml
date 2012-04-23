@@ -1,0 +1,42 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich"
+    template="layout/template.xhtml">
+
+    <ui:define name="body">
+
+		<a4j:form>
+			<a4j:jsFunction name="refreshScreenComponents5sec" reRender="opponents,invitation,timerFiveSec">
+			</a4j:jsFunction>
+		</a4j:form>
+		
+		
+		
+		
+		<a4j:form id="theForm">
+       		<h:outputText value="Choose an opponent and start a game"/>
+       		<h:selectManyCheckbox value="#{homeBean.selectedUsers}" id="opponents">
+       			<s:selectItems  value="#{homeBean.availableUsers}" var="u" label="#{u}" />
+       		</h:selectManyCheckbox>
+      			
+      		<h:commandButton value="Begin Game with Selected Opponents" action="#{homeBean.beginGame()}"/>
+      			
+      	</a4j:form>
+      	
+		<s:div id="invitation" >
+			<a4j:form >
+			<s:div rendered="#{userBean.gameId != null}">
+				You have been invited to game number #{userBean.gameId} by player #{userBean.gameState.hostUser}.
+				<br/>
+				<h:commandLink value="Join Game" action="#{homeBean.joinGame()}"/>
+			</s:div>
+			</a4j:form>
+		</s:div>
+    </ui:define>
+</ui:composition>

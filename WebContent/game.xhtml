@@ -1,0 +1,107 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:rich="http://richfaces.org/rich"
+    xmlns:a4j="http://richfaces.org/a4j"
+    template="layout/template.xhtml">
+
+    <ui:define name="body">
+
+		You are in game #{userBean.gameId}
+		
+		
+		<a4j:form>
+			<a4j:jsFunction name="refreshScreenComponents1sec" reRender="gameLog,gameStatus,turnDivRenderer,timerOneSec">
+			</a4j:jsFunction>
+		</a4j:form>
+		
+		<s:div id="turnDivRenderer">
+			<s:div rendered="#{gameBean.yourTurn}">
+			<script>
+				//<![CDATA[
+				if(document.getElementById("myTurnDiv")==null)
+					
+				refreshTurnDiv();
+				//]]>
+			</script>
+			
+			</s:div>
+			<s:div rendered="#{!gameBean.yourTurn}">
+			<script>
+				//<![CDATA[
+				refreshTurnDiv();
+				//]]>
+			</script>
+			
+			</s:div>
+		</s:div>
+		
+		<a4j:form>
+			<a4j:jsFunction name="refreshTurnDiv" reRender="turnDiv">
+			</a4j:jsFunction>
+		</a4j:form>
+		
+		<s:div>
+		
+			<s:div style="float:left;height:600px;width:500px" id="gameLog">
+			
+				<h:dataTable value="#{gameBean.gameLog}" var="logentry">
+				<h:column>
+					#{logentry}
+				</h:column>
+				</h:dataTable>
+
+			</s:div>
+			
+			<s:div style="float:left;height:600px;width:300px" id="gameStatus">
+			
+				Players:
+				<h:dataTable value="#{gameBean.players}" var="name">
+				<h:column>
+					<h:outputText value="->" rendered="#{gameBean.currentPlayer eq name}"/> 
+				</h:column>
+				<h:column>
+					#{name}
+				</h:column>
+				<h:column>
+					#{gameBean.getHandSize(name)} cards in hand
+				</h:column>
+				
+				</h:dataTable>
+				
+				Card pile has #{gameBean.pileSize} cards.
+			</s:div>
+			
+			
+			<s:div style="clear:both;" id="turnDiv">
+				<s:div rendered="#{gameBean.yourTurn}" id="myTurnDiv">
+					<a4j:form id="turnForm">
+						its your turn to play #{gameBean.currentCard}
+						<h:selectManyCheckbox value="#{gameBean.selectedCards}" id="cardList">
+		       				<s:selectItems  value="#{gameBean.myOrderedHand}" var="c" label="#{c.key}" itemValue="#{c.key}" />
+		       			</h:selectManyCheckbox>
+		       			<a4j:commandButton value="Play selected cards (max 4)" action="#{gameBean.playTurn()}" reRender="turnDiv,turnDivRenderer"/>
+		       			<a4j:commandButton value="Challenge previous action" rendered="#{gameBean.canChallenge()}" action="#{gameBean.challenge()}" reRender="turnDiv,turnDivRenderer"/>
+		       		</a4j:form>
+				</s:div>
+				<s:div rendered="#{!gameBean.yourTurn}" id="notMyTurnDiv">
+					player #{gameBean.currentPlayer}'s turn to play #{gameBean.currentCard}
+					<h:dataTable value="#{gameBean.myHand.cards.keySet()}" var="card">
+						<h:column>
+							#{card}
+						</h:column>
+					</h:dataTable>
+				</s:div>
+				<h:outputText value="#{gameBean.error}"/>
+			</s:div>
+		
+		</s:div>
+		
+		
+		
+    </ui:define>
+</ui:composition>
